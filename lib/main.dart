@@ -29,7 +29,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _time = "00:00";
+  String _time = "00";
+  int totaltime = 0;
   int laptime = 30;
   int laps = 0;
   var stopwatch = new Stopwatch();
@@ -37,15 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _set() {
     setState(() {
-      _time = transformTime(stopwatch.elapsedMilliseconds);
+      totaltime = (stopwatch.elapsedMilliseconds / 1000).truncate();
     });
   }
 
   _update(Timer timer) {
     if (stopwatch.isRunning) {
-      int elapsed = stopwatch.elapsedMilliseconds;
-      if (elapsed >= laptime * 1000) {
-        stopwatch.reset();
+      _time = getTime();
+      if (laps < (totaltime / laptime).truncate()) {
         setState(() {
           laps++;
         });
@@ -69,8 +69,15 @@ class _MyHomePageState extends State<MyHomePage> {
     SystemSound.play(SystemSoundType.click);
   }
 
-  transformTime(int militime) {
-    int secs = (militime / 1000).truncate();
+  String getTime() {
+    return (totaltime % laptime).toString().padLeft(2, '0');
+  }
+
+  String getTotalTime() {
+    return transformTime(totaltime);
+  }
+
+  transformTime(int secs) {
     int mins = (secs / 60).truncate();
     return (mins % 60).toString().padLeft(2, '0') +
         ":" +
@@ -138,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   '$_time',
                   style: Theme.of(context).textTheme.title,
                 ),
-                Text((transformTime(laps * laptime * 1000))),
+                Text(getTotalTime()),
                 Text("Laps: " + laps.toString())
               ],
             ),
