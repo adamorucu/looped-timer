@@ -11,8 +11,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          brightness: Brightness.dark,
+          textTheme: TextTheme(
+              title: TextStyle(fontWeight: FontWeight.bold, fontSize: 70),
+              subtitle: TextStyle(fontSize: 40))),
       home: MyHomePage(),
     );
   }
@@ -29,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _time = "00:00";
   int laptime = 30;
+  int laps = 0;
   var stopwatch = new Stopwatch();
   Timer timer;
 
@@ -43,6 +46,9 @@ class _MyHomePageState extends State<MyHomePage> {
       int elapsed = stopwatch.elapsedMilliseconds;
       if (elapsed >= laptime * 1000) {
         stopwatch.reset();
+        setState(() {
+          laps++;
+        });
         _ring();
       }
       _set();
@@ -86,12 +92,37 @@ class _MyHomePageState extends State<MyHomePage> {
     stop();
     stopwatch.reset();
     _set();
+    setState(() {
+      laps = 0;
+    });
   }
 
   _change(int lapt) {
     setState(() {
       laptime = lapt;
     });
+  }
+
+  Future<String> createAlertDialog(BuildContext context) {
+    TextEditingController myController = TextEditingController();
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Lap time'),
+            content: TextField(
+              controller: myController,
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                child: Text('Submit'),
+                onPressed: () {
+                  Navigator.of(context).pop(myController.text.toString());
+                },
+              )
+            ],
+          );
+        });
   }
 
   @override
@@ -105,14 +136,23 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Text(
                   '$_time',
-                  style: Theme.of(context).textTheme.display1,
+                  style: Theme.of(context).textTheme.title,
                 ),
+                Text((transformTime(laps * laptime * 1000))),
+                Text("Laps: " + laps.toString())
               ],
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: _reset,
-            tooltip: 'Increment',
+            onPressed: () {
+              createAlertDialog(context).then((onValue) {
+                setState(() {
+                  laptime = int.parse(onValue);
+                  _reset();
+                });
+              });
+            },
+            tooltip: 'New',
             child: Icon(Icons.timer),
           ),
         ));
