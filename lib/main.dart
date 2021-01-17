@@ -11,10 +11,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          brightness: Brightness.dark,
-          textTheme: TextTheme(
-              title: TextStyle(fontWeight: FontWeight.bold, fontSize: 70),
-              subtitle: TextStyle(fontSize: 40))),
+        brightness: Brightness.dark,
+      ),
       home: MyHomePage(),
     );
   }
@@ -29,7 +27,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _time = "00";
+  String _time = "0";
   int totaltime = 0;
   int laptime = 30;
   int laps = 0;
@@ -70,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String getTime() {
-    return (totaltime % laptime).toString().padLeft(2, '0');
+    return (totaltime % laptime).toString();
   }
 
   String getTotalTime() {
@@ -116,7 +114,9 @@ class _MyHomePageState extends State<MyHomePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Lap time'),
+            title: Text(
+              'Lap time',
+            ),
             content: TextField(
               controller: myController,
             ),
@@ -134,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return GestureDetector(
         onTap: _toggle,
         child: Scaffold(
@@ -143,10 +144,22 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Text(
                   '$_time',
-                  style: Theme.of(context).textTheme.title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: width * 0.3),
                 ),
-                Text(getTotalTime()),
-                Text("Laps: " + laps.toString())
+                Padding(
+                  padding: EdgeInsets.all(30),
+                ),
+                Text(
+                  getTotalTime(),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: width * 0.05),
+                ),
+                Text(
+                  "Laps: " + laps.toString(),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: width * 0.05),
+                )
               ],
             ),
           ),
