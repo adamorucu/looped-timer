@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:audioplayers/audio_cache.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -34,6 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
   var stopwatch = new Stopwatch();
   Timer timer;
 
+  static AudioCache player = new AudioCache();
+
   void _set() {
     setState(() {
       totaltime = (stopwatch.elapsedMilliseconds / 1000).truncate();
@@ -64,7 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _ring() {
-    SystemSound.play(SystemSoundType.click);
+    // SystemSound.play(SystemSoundType.click);
+    player.play("crank.mp3");
   }
 
   String getTime() {
@@ -83,12 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _toggle() {
-    print('tap');
     if (stopwatch.isRunning) {
-      print('stop');
       stop();
     } else {
-      print('start');
       start();
     }
   }
